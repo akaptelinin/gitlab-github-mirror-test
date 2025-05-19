@@ -9,29 +9,28 @@ generate_and_push_conflict:
   - development
   script:
   - |
-    set -e
     git config --global user.name "hook-bot"
     git config --global user.email "hook-bot@example.com"
-    git remote add github "https://$GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
+    git remote add github "https://$env:GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
 
     mkdir temp_repo
     cd temp_repo
     git init
-    git remote add origin "https://$GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
+    git remote add origin "https://$env:GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
     git fetch origin development
     git checkout -b development origin/development
 
-    if [ ! -f dev_conflict.txt ]; then
+    if (!(Test-Path "dev_conflict.txt")) {
       powershell -File ../generate_dev_conflict.ps1 dev_conflict.txt
       git add dev_conflict.txt
-      NOW="$(date '+%d %b %Y %H:%M' | tr '[:upper:]' '[:lower:]')"
+      $NOW = (Get-Date).ToString("dd MMM yyyy HH:mm").ToLower()
       git commit -m "post-receive: автогенерация конфликта новой версии dev со старой. $NOW"
       git fetch origin development
-      LOCAL_HASH=$(git rev-parse HEAD)
-      REMOTE_HASH=$(git rev-parse origin/development)
-      if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
-        echo "Branch development updated while processing, exit."
+      $LOCAL_HASH = (git rev-parse HEAD).Trim()
+      $REMOTE_HASH = (git rev-parse origin/development).Trim()
+      if ($LOCAL_HASH -ne $REMOTE_HASH) {
+        Write-Host "Branch development updated while processing, exit."
         exit 1
-      fi
+      }
       git push origin HEAD:development
-    fi
+    }
