@@ -1,0 +1,17 @@
+# для локального запуска гитлаба
+
+version: '3'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    hostname: 'localhost'
+    container_name: 'gitlab-test'
+    restart: always
+    shm_size: '2gb'
+    ports:
+      - '8929:80'
+      - '2289:22'
+    volumes:
+      - './config:/etc/gitlab'
+      - './logs:/var/log/gitlab'
+      - './data:/var/opt/gitlab'
