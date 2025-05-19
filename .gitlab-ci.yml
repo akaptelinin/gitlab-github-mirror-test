@@ -22,7 +22,7 @@ generate_and_push_conflict:
     git checkout -b development origin/development
 
     if [ ! -f dev_conflict.txt ]; then
-      bash ../generate_dev_conflict.sh dev_conflict.txt
+      powershell -File ../generate_dev_conflict.ps1 dev_conflict.txt
       git add dev_conflict.txt
       NOW="$(date '+%d %b %Y %H:%M' | tr '[:upper:]' '[:lower:]')"
       git commit -m "post-receive: автогенерация конфликта новой версии dev со старой. $NOW"
