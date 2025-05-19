@@ -3,6 +3,8 @@ stages:
 
 generate_and_push_conflict:
   stage: dev_conflict
+  tags:
+  - runner
   only:
   - development
   script:
