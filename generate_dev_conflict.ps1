@@ -1,39 +1,42 @@
-param (
-    [string]$OUTFILE = "dev_conflict.txt"
+<#
+    PowerShell script that creates dev_conflict.txt filled with
+    dummy lines to force merge conflicts.
+#>
+
+param(
+    [string]$OutFile = 'dev_conflict.txt'
 )
 
-$UNIQUE_ID = [guid]::NewGuid().ToString()
-$TIMESTAMP = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$HASH = (git rev-parse HEAD).Trim()
+$ErrorActionPreference = 'Stop'
+$UID       = [guid]::NewGuid()
+$Timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+$Hash      = (git rev-parse HEAD).Trim()
 
 @'
-##############################################
-#        ВНИМАНИЕ: ВЕТКА DEV ПЕРЕСОЗДАНА       #
-##############################################
-'@ | Out-File -Encoding utf8 -FilePath $OUTFILE
+############################################################
+#   WARNING: DEVELOPMENT BRANCH WAS RECREATED
+############################################################
+'@ | Out-File $OutFile -Encoding utf8
 
-"# Уникальный ID ветки: $UNIQUE_ID" | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
-"# Дата создания: $TIMESTAMP" | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
-"# Хэш коммита: $HASH" | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
+"Branch unique ID : $UID"       | Out-File $OutFile -Append -Encoding utf8
+"Creation date    : $Timestamp" | Out-File $OutFile -Append -Encoding utf8
+"Commit hash      : $Hash"      | Out-File $OutFile -Append -Encoding utf8
+"############################################################" | Out-File $OutFile -Append -Encoding utf8
+"" | Out-File $OutFile -Append -Encoding utf8
 
-@'
-##############################################
-
-'@ | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
-
-for ($i = 1; $i -le 500; $i++) {
-    "Инструкция #$i: Обновите локальную ветку: git fetch origin && git checkout dev && git pull" | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
+1..500 | ForEach-Object {
+    "Instruction #$_: update local branch -> git fetch origin && git checkout dev && git pull" |
+        Out-File $OutFile -Append -Encoding utf8
 }
 
-for ($i = 1; $i -le 500; $i++) {
-    $RANDOM_HASH = -join ((65..90) + (97..122) + (48..57) | Get-Random -Count 32 | % {[char]$_})
-    "Конфликтная строка #$i: $RANDOM_HASH" | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
+1..500 | ForEach-Object {
+    $Rand = -join ((48..57)+(65..90)+(97..122) | Get-Random -Count 32 | ForEach-Object {[char]$_})
+    "Conflict line #$_: $Rand" | Out-File $OutFile -Append -Encoding utf8
 }
 
 @'
-##############################################
-# Если вы видите этот файл — ваша локальная ветка устарела!
-# Пожалуйста, обновите её перед пушем!
-# Мы верим в вас! Код — это жизнь! :)
-##############################################
-'@ | Out-File -Encoding utf8 -FilePath $OUTFILE -Append
+############################################################
+#   If you see this file your local branch is outdated!
+#   Please update before pushing.
+############################################################
+'@ | Out-File $OutFile -Append -Encoding utf8

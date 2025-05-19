@@ -1,36 +1,48 @@
 stages:
 - conflict
 
-generate_conflict_file:
+generate_and_push_conflict:
   stage: conflict
+  only:
+  - development # run job only on branch development
   tags:
-  - runner
+  - runner # tag of your Windows runner; delete block if runner has no tags
   script:
   - |
-    git config --global user.name "hook-bot"
-    git config --global user.email "hook-bot@example.com"
-    git remote add github "https://$env:GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
+    powershell -NoLogo -NoProfile -Command "& {
+      $ErrorActionPreference = 'Stop'
 
-    mkdir temp_repo
-    cd temp_repo
-    git init
-    git remote add origin "https://$env:GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
-    git fetch origin development
-    git checkout -b development origin/development
+      git config --global user.name  'hook-bot'
+      git config --global user.email 'hook-bot@example.com'
 
-    if (!(Test-Path "dev_conflict.txt")) {
-      powershell -File ../generate_dev_conflict.ps1 dev_conflict.txt
-      git add dev_conflict.txt
-      $NOW = (Get-Date).ToString("dd MMM yyyy HH:mm").ToLower()
-      git commit -m "post-receive: автогенерация конфликта новой версии dev со старой. $NOW"
+      $gh = 'https://'+$env:GITHUB_TOKEN+'@github.com/akaptelinin/gitlab-github-mirror-test.git'
+
+      $work = Join-Path $PWD 'temp_repo'
+      if (Test-Path $work) { Remove-Item $work -Recurse -Force }
+      New-Item -ItemType Directory -Path $work | Out-Null
+      Set-Location $work
+
+      git init | Out-Null
+      git remote add origin $gh
       git fetch origin development
-      $LOCAL_HASH = (git rev-parse HEAD).Trim()
-      $REMOTE_HASH = (git rev-parse origin/development).Trim()
-      if ($LOCAL_HASH -ne $REMOTE_HASH) {
-        Write-Host "Branch development updated while processing, exit."
-        exit 1
+      git checkout -b development origin/development
+
+      if (-not (Test-Path dev_conflict.txt)) {
+        & $PSScriptRoot\generate_dev_conflict.ps1 dev_conflict.txt
+        git add dev_conflict.txt
+        $now = (Get-Date).ToString('dd MMM yyyy HH:mm').ToLower()
+        git commit -m \"auto‑conflict file generated. $now\"
+
+        git fetch origin development
+        $local  = (git rev-parse HEAD).Trim()
+        $remote = (git rev-parse origin/development).Trim()
+        if ($local -ne $remote) {
+          Write-Host 'remote branch updated during job, abort'
+          exit 1
+        }
+
+        git push origin HEAD:development
+      } else {
+        Write-Host 'dev_conflict.txt already exists, skip generation'
       }
-      git push origin HEAD:development
-    } else {
-      Write-Host "dev_conflict.txt already exists, skipping generation and push."
-    }
+    }"
