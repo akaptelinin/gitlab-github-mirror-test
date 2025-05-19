@@ -1,21 +1,31 @@
 stages:
 - conflict
 
+# Git не должен открывать окошко логина
+variables:
+  GIT_TERMINAL_PROMPT: "0"
+
 generate_and_push_conflict:
   stage: conflict
   only:
-  - development # запускаем только на ветке development
+  - development # job только для ветки development
   tags:
-  - runner # убери этот блок, если у раннера нет тега
+  - runner # убери, если у раннера нет тега
   script: |
     $ErrorActionPreference = 'Stop'
 
+    if (-not $env:GITHUB_TOKEN) {
+      Write-Error 'GITHUB_TOKEN env var is empty'; exit 1
+    }
+
     git config --global user.name  'hook-bot'
     git config --global user.email 'hook-bot@example.com'
+    git config --global credential.helper ''   # выключаем все менеджеры
 
-    $gh   = "https://$env:GITHUB_TOKEN@github.com/akaptelinin/gitlab-github-mirror-test.git"
+    # --- репозиторий с PAT как паролем ---
+    $gh = "https://x-access-token:$($env:GITHUB_TOKEN)@github.com/akaptelinin/gitlab-github-mirror-test.git"
+
     $work = Join-Path $PWD 'temp_repo'
-
     if (Test-Path $work) { Remove-Item $work -Recurse -Force }
     New-Item -ItemType Directory -Path $work | Out-Null
     Set-Location $work
@@ -34,9 +44,11 @@ generate_and_push_conflict:
       Write-Host 'dev_conflict.txt already exists, skip generation'
     }
 
-    # пытаемся запушить; если не fast‑forward — раннер падает
-    git push origin HEAD:development
+    # --- пушим; если не fast‑forward или проблема с auth → exit 1 ---
+    git push --porcelain origin HEAD:development
     if ($LASTEXITCODE -ne 0) {
-      Write-Host 'push failed (branch updated on remote), aborting job'
+      Write-Error 'push failed (branch updated on remote or auth error)'
       exit 1
+    } else {
+      Write-Host 'push OK'
     }
