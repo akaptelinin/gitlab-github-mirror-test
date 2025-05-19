@@ -29,7 +29,8 @@ while read oldrev newrev refname; do
       if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
         echo "Branch $BRANCH updated while processing, exit."
         cd /
-        rm -rf "$WORKDIR"
+        
+        # rm -rf "$WORKDIR"
         exit 1
       fi
 
@@ -37,7 +38,8 @@ while read oldrev newrev refname; do
     fi
 
     cd /
-    rm -rf "$WORKDIR"
+    
+    # rm -rf "$WORKDIR"
   fi
 done
 
