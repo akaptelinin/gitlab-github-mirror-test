@@ -1,12 +1,10 @@
 stages:
-- dev_conflict
+- conflict
 
-generate_and_push_conflict:
-  stage: dev_conflict
+generate_conflict_file:
+  stage: conflict
   tags:
   - runner
-  only:
-  - development
   script:
   - |
     git config --global user.name "hook-bot"
@@ -33,4 +31,6 @@ generate_and_push_conflict:
         exit 1
       }
       git push origin HEAD:development
+    } else {
+      Write-Host "dev_conflict.txt already exists, skipping generation and push."
     }
