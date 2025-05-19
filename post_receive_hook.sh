@@ -1,5 +1,7 @@
 #!/bin/bash
 
+touch /tmp/test_hook_was_here
+
 echo "RUNNING post-receive" >> /tmp/hook_log.txt
 
 GEN_SCRIPT="/generate_conflict.sh"  # защищённое место
@@ -38,7 +40,7 @@ while read oldrev newrev refname; do
     fi
 
     cd /
-    
+
     # rm -rf "$WORKDIR"
   fi
 done
