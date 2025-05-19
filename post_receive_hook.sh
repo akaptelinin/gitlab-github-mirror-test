@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "RUNNING post-receive" >> /tmp/hook_log.txt
+
 GEN_SCRIPT="/generate_conflict.sh"  # защищённое место
 GITHUB_REPO="https://$(cat /run/secrets/github_token)@github.com/akaptelinin/gitlab-github-mirror-test.git"
 BRANCH="development"
