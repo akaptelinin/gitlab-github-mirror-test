@@ -11,6 +11,4 @@ generate_and_push_conflict:
   tags:
     - runner
   script:
-    - 'echo "PWD: $PWD"'
-    - dir
     - node conflict-job.js

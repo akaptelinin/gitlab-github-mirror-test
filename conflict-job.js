@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const CI_PROJECT_DIR = process.env.CI_PROJECT_DIR || process.cwd();
 
 if (!GITHUB_TOKEN) {
     console.error('GITHUB_TOKEN env var is empty');
@@ -27,7 +28,6 @@ function run(cmd) {
     }
 }
 
-// Конфиг гита
 run('git init');
 run(`git config user.name "hook-bot"`);
 run(`git config user.email "hook-bot@example.com"`);
@@ -39,7 +39,7 @@ run('git checkout -b development origin/development');
 
 const conflictFile = 'dev_conflict.txt';
 if (!fs.existsSync(conflictFile)) {
-    run(`node ${path.join(CI_PROJECT_DIR, 'generate_dev_conflict.js')} ${conflictFile}`);
+    run(`node ${path.join(CI_PROJECT_DIR, 'generate-dev-conflict.js')} ${conflictFile}`);
     run(`git add ${conflictFile}`);
     const now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour12: false });
     run(`git commit -m "auto-conflict file generated. ${now}"`);
