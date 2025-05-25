@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const CI_PROJECT_DIR = process.env.CI_PROJECT_DIR || process.cwd();
 
 if (!GITHUB_TOKEN) {
     console.error('GITHUB_TOKEN env var is empty');
