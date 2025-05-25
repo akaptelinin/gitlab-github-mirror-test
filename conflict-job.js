@@ -34,7 +34,7 @@ run(`git config user.email "hook-bot@example.com"`);
 run('git config credential.helper ""');
 
 run(`git remote add origin ${repoUrl}`);
-run('git fetch origin development');
+run('git fetch --depth=1 origin development');
 run('git checkout -b development origin/development');
 
 const conflictFile = 'dev_conflict.txt';
