@@ -40,7 +40,7 @@ run('git checkout -b development origin/development');
 
 const conflictFile = 'dev_conflict.txt';
 if (!fs.existsSync(conflictFile)) {
-    run(`node ${path.join(CI_PROJECT_DIR, 'generate_dev_conflict.js')} ${conflictFile}`);
+    run(`node ${path.join(CI_PROJECT_DIR, 'generate-dev-conflict.js')} ${conflictFile}`);
     run(`git add ${conflictFile}`);
     const now = new Date().toLocaleString('ru-RU', { timeZone: 'Europe/Moscow', hour12: false });
     run(`git commit -m "auto-conflict file generated. ${now}"`);
