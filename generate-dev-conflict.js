@@ -29,17 +29,18 @@ function main(outFile = 'dev_conflict.txt') {
     lines.push('############################################################');
     lines.push('');
 
-    for (let i = 1; i <= 500; ++i) {
-        lines.push(`Instruction #${i} - update local branch -> git fetch origin && git checkout dev && git pull`);
-    }
-    for (let i = 1; i <= 500; ++i) {
+    for (let i = 1; i <= 50; ++i) {
+        lines.push(`Instruction #${i} - update local branch:`);
+        lines.push(`  git checkout master`);
+        lines.push(`  git branch -D development`);
+        lines.push(`  git fetch origin`);
+        lines.push(`  git checkout development`);
         lines.push(`Conflict line #${i} - ${randomString(32)}`);
+        lines.push('############################################################');
+        lines.push('#   If you see this file your local branch is outdated!');
+        lines.push('#   Please update before pushing.');
+        lines.push('############################################################');
     }
-
-    lines.push('############################################################');
-    lines.push('#   If you see this file your local branch is outdated!');
-    lines.push('#   Please update before pushing.');
-    lines.push('############################################################');
 
     fs.writeFileSync(outFile, lines.join('\n'), { encoding: 'utf8' });
 }
