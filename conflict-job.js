@@ -31,7 +31,7 @@ function run(cmd) {
 run('git init');
 run(`git config user.name "hook-bot"`);
 run(`git config user.email "hook-bot@example.com"`);
-run('git config --global credential.helper ""');
+run('git config credential.helper ""');
 
 run(`git remote add origin ${repoUrl}`);
 run('git fetch origin development');
