@@ -66,13 +66,16 @@ flowchart LR
   GH[GitHub repo]
   JS[mirror-repo-homeless-edition.js]
   GL[GitLab repo]
-  CI[GitLab Runner]
+  CI[GitLab Runner conflict-job.js]
   DEV[branch development]
+  SKIP((skip))
 
   GH -->|git clone --mirror| JS
   JS -->|git push --mirror| GL
-  GL -->|pipeline trigger on push to DEV| CI
-  CI -->|node conflict-job.js| GL
+  GL -->|push to DEV triggers pipeline| CI
+
+  CI -->|dev_conflict.txt missing: create and push| GH
+  CI -->|dev_conflict.txt exists: skip| SKIP
 ```
 
 ---
