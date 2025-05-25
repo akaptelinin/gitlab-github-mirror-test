@@ -1,5 +1,5 @@
 stages:
-- conflict
+  - conflict
 
 variables:
   GIT_TERMINAL_PROMPT: "0"
@@ -7,11 +7,10 @@ variables:
 generate_and_push_conflict:
   stage: conflict
   only:
-  - development
+    - development
   tags:
-  - runner
-  image: node:20
-  before_script:
-  - apt-get update && apt-get install -y git
+    - runner
   script:
-  - node conflict-job.js
+    - 'echo "PWD: $PWD"'
+    - dir
+    - node conflict-job.js
