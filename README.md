@@ -6,7 +6,7 @@
    (`mirror-repo-homeless-edition.js` крутится где угодно — хоть на ноуте, хоть в отдельном контейнере — и раз в `INTERVAL_SEC` тянет изменения из GitHub и пушит их в GitLab).
 
 2. **Генерация «конфликт‑файла» в ветке `development`**  
-   GitLab‑CI запускает `conflict-job.js` → скрипт создаёт/обновляет `dev_conflict.txt`, коммитит и пушит.  
+   GitLab‑CI запускает `conflict-job.js` → скрипт создаёт/обновляет `dev_conflict.txt`, коммитит и пушит в GitHub.  
    Если кто‑то успел запушить раньше — получат реальный конфликт и поймут, что локальная ветка устарела.
 
 ---
@@ -38,7 +38,7 @@ set GITLAB_PASS=<GL_TOKEN_OR_PASS>
 node mirror-repo-homeless-edition.js
 ````
 
-Скрипт mirror-repo-homeless-edition.js сам создаёт временный bare‑клон, меняет push‑remote на GitLab и делает `git push --mirror`.
+Скрипт `mirror-repo-homeless-edition.js` сам создаёт временный bare‑клон, меняет push‑remote на GitLab и делает `git push --mirror`.
 По‑умолчанию интервал — 60 секунд, правится переменной `INTERVAL_SEC`.
 
 ### 2. Конфликт‑джоба
@@ -79,7 +79,7 @@ flowchart LR
 
 ## Чего тут **нет**
 
-* Bidirectional mirror (в обе стороны) — здесь только GitHub → GitLab.
+* Bidirectional mirror (в обе стороны) — здесь только GitHub → GitLab (кроме ветки development, если нужно создать `dev_conflict.txt`. Тогда GitLab → GitHub).
 * Синхрона issues / PR — только код.
 * Защиты от «дедлока», когда оба скрипта пушат одновременно (для демо не нужно).
 
