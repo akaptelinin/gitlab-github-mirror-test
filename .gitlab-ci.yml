@@ -10,5 +10,6 @@ generate_and_push_conflict:
     - development
   tags:
     - runner
+  resource_group: conflict-lock
   script:
     - node conflict-job.js
