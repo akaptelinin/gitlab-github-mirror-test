@@ -20,7 +20,7 @@ sleep_for_5_minutes:
   only:
     - master
   tags:
-    - just-runner
+    - runner
   script:
     - echo "Doing nothing for 5 minutes..."
     - Start-Sleep -Seconds 300
