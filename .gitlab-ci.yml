@@ -13,3 +13,16 @@ generate_and_push_conflict:
   resource_group: conflict-lock
   script:
     - node conflict-job.js
+  
+stages:
+  - idle
+
+sleep_for_5_minutes:
+  stage: idle
+  only:
+    - master
+  tags:
+    - just-runner
+  script:
+    - echo "Doing nothing for 5 minutes..."
+    - Start-Sleep -Seconds 300
